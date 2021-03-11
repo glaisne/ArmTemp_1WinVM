@@ -1,5 +1,6 @@
 
 param (
+    [string] $SubscriptionName,
     [string] $name,
     [string] $purpose,
     [string] $attempt
@@ -11,10 +12,7 @@ param (
 
 if (-not $name   ) { $name    = 'ARMTemplate' }
 if (-not $purpose) { $purpose = 'Testing'     }
-
-
-$SubscriptionName = 'Visual Studio Enterprise'
-$SubscriptionName = 'Azure-powershell-itdev'
+if (-not $SubscriptionName) { $SubscriptionName = 'Visual Studio Enterprise'     }
 
 
 $TemplateFile = "$pwd\azuredeploy.json"
@@ -29,6 +27,8 @@ $certificateName = "Azure-$rgname-SSCert" # SSCert = 'Self-Signed Certificate'
 $adminUsername = 'Gene'
 $cred = $([System.Management.Automation.PSCredential]::new('gene', $(ConvertTo-SecureString -String 'Password!101' -AsPlainText -Force)))
 $WindowsOSVersion = '2019-Datacenter'
+$VMSize = 'Standard_B1ms'
+
 
 
 if ($keyVaultName -notmatch '^[a-zA-Z0-9-]{3,24}$' -or $keyVaultName[0] -notmatch '[a-z]')
@@ -71,10 +71,10 @@ function GetMyIp()
 
 
 # Import AzureRM modules for the given version manifest in the AzureRM module
-if (-not $(get-module AzureRm))
-{
-    Import-Module AzureRm -Verbose
-}
+# if (-not $(get-module AzureRm))
+# {
+#     Import-Module AzureRm -Verbose
+# }
 
 # Authenticate to your Azure account
 # Login-AzureRmAccount
@@ -166,6 +166,7 @@ $MyParams = @{
     NSGSourceIP    = $LocalIP
     adminUsername  = $adminUsername
     dnsLabelPrefix = $dnsLabelPrefix
+    VMSize         = $VMSize
 }
 
 if ($WindowsOSVersion)
